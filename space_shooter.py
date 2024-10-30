@@ -9,6 +9,8 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 running = True
 
+clock = pygame.time.Clock()
+
 player_img = pygame.image.load('images/player.png') 
 pygame.display.set_caption("Space Shooter")
 pygame.display.set_icon(player_img)
@@ -36,6 +38,8 @@ star_list = [(random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT))
 speed = 1
 
 while running:
+    clock.tick(60)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -47,6 +51,7 @@ while running:
         display_surface.blit(star_surf, star)
 
     player_rect.right += speed
+    player_rect.top += speed
     
     if player_rect.right >= WINDOW_WIDTH or player_rect.left <= 0:
         speed *=-1
