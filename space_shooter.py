@@ -1,7 +1,7 @@
 import pygame
 import sys
 from os.path import join
-import random
+from random import randint, uniform
 
 # classes
 
@@ -64,15 +64,12 @@ class Meteor(pygame.sprite.Sprite):
         self.image = surf
         self.rect = self.image.get_frect(center = pos)
         self.create_time = pygame.time.get_ticks()
+        self.direction = pygame.Vector2(uniform(-0.5, 0.5),1)
+        self.speed = randint(300, 600)
 
-    def meteor_timer(self):
-        current_time = pygame.time.get_ticks()
-        if current_time - self.create_time > 2000:
-            self.kill()
 
     def update(self, dt):
-        self.rect.centery += 200 *dt
-        self.meteor_timer()
+        self.rect.center += self.speed *dt * self.direction
         if self.rect.top > WINDOW_HEIGHT:
            self.kill()
 # setup
@@ -104,9 +101,10 @@ meteor_surf = pygame.image.load(join('images', 'meteor.png')).convert_alpha()
 
 # sprites
 all_sprites = pygame.sprite.Group()
+meteor_sprites = pygame.sprite.Group()
 stars_num = 20
 for i in range(stars_num):
-    star = Star(all_sprites, random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT), star_surf)
+    star = Star(all_sprites, randint(0, WINDOW_WIDTH), randint(0, WINDOW_HEIGHT), star_surf)
     
 
 # creating objects
@@ -117,8 +115,6 @@ player = Player(all_sprites)
 meteor_event = pygame.event.custom_type()
 pygame.time.set_timer(meteor_event, 500)
 
-
-
 while running:
     dt = clock.tick(60) /1000
     display_surface.fill("darkgray")
@@ -127,12 +123,15 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == meteor_event:
-            meteor = Meteor(meteor_surf, (random.randint(0, WINDOW_WIDTH), 0),all_sprites)
+            meteor = Meteor(meteor_surf, (randint(0, WINDOW_WIDTH), randint(-300, -100)), (all_sprites, meteor_sprites))
    
     player.update(dt)
     
+
     
     all_sprites.update(dt)
+    print(pygame.sprite.spritecollide(player, meteor_sprites, False))
+
     all_sprites.draw(display_surface)
     pygame.display.update()
     
